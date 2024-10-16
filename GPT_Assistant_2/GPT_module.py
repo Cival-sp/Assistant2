@@ -40,7 +40,7 @@ class OpenAiGPT(GptInterface):
     """
 
     def __init__(self, url="", token=""):
-        self.allowed_models = ["gpt-4o-mini", "gpt-4o"]
+        self.allowed_models = ["gpt-4o-mini", "gpt-4o", "o1-mini", "o1-preview", "gpt-3.5-turbo"]
         self.url = url
         self.token = token
         self.__model = "gpt-4o-mini"
@@ -123,7 +123,7 @@ class OpenAiGPT(GptInterface):
             else:
                 return None
         except Exception as e:
-            print(e)
+            print(f"В процессе запроса к серверу GPT произошла ошибка: {e}")
             return None
 
 
