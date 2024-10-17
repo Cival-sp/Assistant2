@@ -128,7 +128,7 @@ class OpenAiGPT(GptInterface):
 
 
 if __name__ == "__main__":
-    gpt4_mini = OpenAiGPT("https://api.proxyapi.ru/openai/v1/chat/completions", "sk-cmsdlCHR3YhviLU2UJcspxAfiDJfynmr")
+    gpt4_mini = OpenAiGPT("URL", "TOKEN")
     # print(gpt4_mini.ask("Расскажи о себе, пожалуйста"))
     j = {
         "messages": [
@@ -139,5 +139,3 @@ if __name__ == "__main__":
         ]
     }
     print(gpt4_mini.send_json(j))
-
-    print("end")

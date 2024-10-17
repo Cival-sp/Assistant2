@@ -1,14 +1,8 @@
 import requests
-from abc import ABC, abstractmethod
 import random
 import string
-
-
-class AudioFile:
-    def __init__(self, FileName, FileExtension, Body=None):
-        self.fileName = FileName
-        self.fileExtension = FileExtension
-        self.body = Body
+from Utility import AudioFile
+from abc import ABC, abstractmethod
 
 
 class TtsInterface(ABC):
@@ -18,7 +12,7 @@ class TtsInterface(ABC):
         """
         Озвучивает переданный текст в соотвествии с параметрами обьекта класса
         :param text: Текст для озвучивания
-        :return: AudioFile
+        :return: AudioFile || None
         """
         pass
 
@@ -29,7 +23,7 @@ class OpenAiTTS(TtsInterface):
     """
 
     def __init__(self, URL="", TOKEN=""):
-        self.allowed_models = ["tts-1", "tts-1-hd", "whisper-1"]
+        self.allowed_models = ["tts-1", "tts-1-hd"]
         self.allowed_voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
         self.allowed_output_formats = ["mp3", "opus", "aac", "flac", "wav", "pcm"]
         self.allowed_input_formats = ["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"]
@@ -126,10 +120,11 @@ class OpenAiTTS(TtsInterface):
 
 
 if __name__ == "__main__":
-    tts = OpenAiTTS("https://api.proxyapi.ru/openai/v1/audio/speech", "sk-cmsdlCHR3YhviLU2UJcspxAfiDJfynmr")
+    tts = OpenAiTTS("URL", "TOKEN")
     tts.set_model("tts-1")
     tts.set_voice("nova")
     tts.speed = 0.9
     file = tts.to_voice("Это образец синтеза речи через OpenAi api")
-    with open(file.fileName+file.fileExtension, "wb") as f:
+    with open(file.name+file.extension, "wb") as f:
         f.write(file.body)
+        print(f"Сохранено: {file.name+file.extension}")
