@@ -1,4 +1,5 @@
 import requests
+import json
 from abc import ABC, abstractmethod
 
 
@@ -29,7 +30,7 @@ class GptInterface(ABC):
         """
         Отправляет GPT модели кастомный json, используя заданную модель при инициализации
         :param json_dict: словарь, который будет преобразован в json и отправлен модели
-        :return: Возвращает строку или None
+        :return: Возвращает json или None
         """
         pass
 
@@ -84,22 +85,22 @@ class OpenAiGPT(GptInterface):
         else:
             return False
 
-    def ask(self, message, json_pattern=None):
+    def ask(self, message, json_pattern=None, prompt=None):
         """
         Отправляет сообщение GPT модели. При необходимости можно передать словарь с историей или промтом.
         :param message: Сообщение от пользователя
-        :param json_pattern: Словарь-шаблон
+        :param json_pattern: Словарь-шаблон |Опционально
+        :param prompt: Промт для chatGPT от имени системы |Опционально
         :return: Строка. Ответ от модели. || None
         """
         try:
             if json_pattern is None:
-                json_pattern = self.create_default_json()
+                json_pattern = self.create_default_json(prompt)
 
             json_pattern['messages'].append({
                 "role": "user",
                 "content": message
             })
-
             response = requests.post(self.url, json=json_pattern, headers=self.headers)
             gpt_answer = OpenAiGPT.extract_string_from_answer(response)
             if gpt_answer is not None:
@@ -117,9 +118,11 @@ class OpenAiGPT(GptInterface):
             }
             to_send_json.update(json_dict)
             response = requests.post(self.url, json=to_send_json, headers=self.headers)
-            res_str = OpenAiGPT.extract_string_from_answer(response)
-            if res_str is not None:
-                return res_str
+            if response.status_code != 200:
+                return None
+            res_json = response.json()
+            if res_json is not None:
+                return res_json
             else:
                 return None
         except Exception as e:
@@ -128,14 +131,34 @@ class OpenAiGPT(GptInterface):
 
 
 if __name__ == "__main__":
-    gpt4_mini = OpenAiGPT("URL", "TOKEN")
-    # print(gpt4_mini.ask("Расскажи о себе, пожалуйста"))
+    gpt4_mini = OpenAiGPT("", "")
+    # print(gpt4_mini.ask("Добавь в json файл своего ответа массив 'commands':[]",prompt= ""))
     j = {
         "messages": [
             {
                 "role": "system",
-                "content": "Какие данные может возвращать chat gpt в json файле ответа? "
+                "content": """
+                Текст для пользователя помести по ключу "text"
+                Для выполнения команды помести ее в массив "commands"
+                Для продолжения беседы или получения результатов выполнения команды используй флаг "continue_dialog"
+                """
+
+            },
+            {
+                "role": "user",
+                "content": "Какая погода сегодня в москве ?"
             }
-        ]
+        ],
+        "response_format": {
+            "type": "json_schema",
+            "json_schema": {
+                "text": "",
+                "commands": [],
+                "continue_dialog": False
+            },
+            "strict": True
+        }
     }
-    print(gpt4_mini.send_json(j))
+    print(j)
+    res=gpt4_mini.send_json(j)
+    print( json.dumps(res, indent=4) )
