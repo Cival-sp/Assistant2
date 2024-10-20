@@ -5,15 +5,11 @@ from abc import ABC, abstractmethod
 
 class GptInterface(ABC):
     """Интерфейс для работы с GPT """
+    url = None
+    token = None
 
     @abstractmethod
-    def __init__(self, url="", token=""):
-        """
-        :param url: URL для запроса к api GPT
-        :param token: Token авторизации api GPT
-        """
-        self.url = url
-        self.token = token
+    def __init__(self):
         pass
 
     @abstractmethod
@@ -29,7 +25,7 @@ class GptInterface(ABC):
     def send_json(self, json_dict):
         """
         Отправляет GPT модели кастомный json, используя заданную модель при инициализации
-        :param json_dict: словарь, который будет преобразован в json и отправлен модели
+        :param json_dict: словарь, который будет преобразован в json и отправлен модели.
         :return: Возвращает json или None
         """
         pass
@@ -40,13 +36,11 @@ class OpenAiGPT(GptInterface):
     Реализация api chatGPT
     """
 
-    def __init__(self, url="", token=""):
+    def __init__(self):
         self.allowed_models = ["gpt-4o-mini", "gpt-4o", "o1-mini", "o1-preview", "gpt-3.5-turbo"]
-        self.url = url
-        self.token = token
         self.__model = "gpt-4o-mini"
         self.headers = {
-            "Authorization": f"Bearer {self.token}",
+            "Authorization": f"Bearer {OpenAiGPT.token}",
             "Content-Type": "application/json"
         }
 
@@ -131,7 +125,9 @@ class OpenAiGPT(GptInterface):
 
 
 if __name__ == "__main__":
-    gpt4_mini = OpenAiGPT("", "")
+    OpenAiGPT.token = "<KEY>"
+    OpenAiGPT.url = "host"
+    gpt4_mini = OpenAiGPT()
     # print(gpt4_mini.ask("Добавь в json файл своего ответа массив 'commands':[]",prompt= ""))
     j = {
         "messages": [

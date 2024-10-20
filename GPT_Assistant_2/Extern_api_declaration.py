@@ -1,5 +1,6 @@
 from abc import ABC
 import pickle
+from GPT_Assistant_2.Command_processor import Command
 
 
 class ApiInterface(ABC):
@@ -10,6 +11,7 @@ class ApiInterface(ABC):
         self.token = token
         self.api_name = ""
         self.description = ""
+        self.available_commands = []   #  [class Command,...]
 
     def save_to_file(self, filepath):
         with open(ApiInterface.contain_folder + '/' + self.api_name, 'wb') as file:

@@ -1,8 +1,9 @@
 from Utility import validate_json
+from Assistant_core import AssistantAnswer
 
 
 class Command:
-    def __init__(self, name=None, parameters=None):
+    def __init__(self, name=None, parameters=None, description=None):
         """
         Конструктор класса Command.
         :param name: Название команды (строка).
@@ -10,6 +11,7 @@ class Command:
         """
         self.name = name
         self.parameters = parameters if parameters is not None else {}
+        self.command_description = description
 
     @staticmethod
     def from_json(json_dict):
@@ -35,48 +37,29 @@ class Command:
         }
 
 
-class AssistantAnswer:
-    def __init__(self):
-        self.text = None
-        self.command = None
-        self.continue_conversation = None
+class CommandList:
+    def __init__(self, commands=None):
+        self.commands = commands or []
 
-    @staticmethod
-    def from_json(json_dict):
-        """
-        Создает объект AssistantAnswer из словаря JSON.
-        :param json_dict: Словарь JSON, содержащий данные для инициализации объекта.
-        :return: Экземпляр AssistantAnswer.
-        """
-        json_dict = validate_json(json_dict)
-        instance = AssistantAnswer()
-        instance.text = json_dict.get("text")
-        command_json = json_dict.get("command")
-        if command_json:
-            instance.command = Command.from_json(command_json)
-        instance.continue_conversation = json_dict.get("continueConversation", False)
+    def append(self, command):
+        self.commands.append(command)
 
-        return instance
+    def format_description_string(self):
+        result_str = "Доступные команды. Формат команды - имя(параметры)|Описание команды"
+        for command in self.commands:
+            result_str += f"{command.name}({command.parameters})|{command.command_description},)"
+            return result_str
 
-    def to_json(self):
-        """
-        Преобразует объект AssistantAnswer в словарь JSON.
-        :return: Словарь JSON, представляющий объект AssistantAnswer.
-        """
-        json_dict = {
-            "Text": self.text,
-            "continueConversation": self.continue_conversation
-        }
-        if self.command:
-            json_dict["command"] = self.command.to_json()
-        return json_dict
+    def __str__(self):
+        result_str = ""
+        for command in self.commands:
+            result_str += f"{command.name}({command.parameters}),)"
+        return result_str
 
 
 class CommandProcessor:
-    def __init__(self, gpt_model_object=None, command_object_list=None, schema=None):
+    def __init__(self, command_object_list=None):
         self.command_object_list = command_object_list or []  # Список объектов, содержащих методы для выполнения
-        self.gpt_model_object = gpt_model_object
-        self.schema = schema
 
     def parse_command(self, assistant_answer):
         try:
