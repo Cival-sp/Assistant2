@@ -6,6 +6,8 @@ from abc import ABC, abstractmethod
 
 
 class TtsInterface(ABC):
+    url = ""
+    token = ""
 
     @abstractmethod
     def to_voice(self, text):
@@ -27,8 +29,8 @@ class OpenAiTTS(TtsInterface):
         self.allowed_voices = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"]
         self.allowed_output_formats = ["mp3", "opus", "aac", "flac", "wav", "pcm"]
         self.allowed_input_formats = ["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm"]
-        self.url = URL
-        self.token = TOKEN
+        TtsInterface.url = URL
+        TtsInterface.token = TOKEN
         self.speed = 1.0
 
         self.__voice = "nova"
@@ -99,7 +101,7 @@ class OpenAiTTS(TtsInterface):
         }
         return jsn
 
-    def to_voice(self, text):
+    def to_voice(self, text: str) -> AudioFile:
         """
         Метод для озвучивания переданного в метод текста. При генерации аудио, используются параметры обьекта.
         :param text: Текст для озвучивания.
@@ -125,6 +127,6 @@ if __name__ == "__main__":
     tts.set_voice("nova")
     tts.speed = 0.9
     file = tts.to_voice("Это образец синтеза речи через OpenAi api")
-    with open(file.name+file.extension, "wb") as f:
+    with open(file.name + file.extension, "wb") as f:
         f.write(file.body)
-        print(f"Сохранено: {file.name+file.extension}")
+        print(f"Сохранено: {file.name + file.extension}")

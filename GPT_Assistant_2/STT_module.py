@@ -5,6 +5,9 @@ from abc import ABC, abstractmethod
 
 class SttInterface(ABC):
 
+    url=""
+    token=""
+
     @abstractmethod
     def recognize(self, AudioFile):
         pass
@@ -21,9 +24,9 @@ class OpenAiStt(SttInterface):
 
     def __init__(self, URL="", TOKEN=""):
         self.allowed_input_formats = ["mp3", "mp4", "mpeg", "mpga", "m4a", "wav", "webm","ogg"]
-        self.url = URL
-        self.token = TOKEN
         self.__model = "whisper-1"
+        SttInterface.url=URL
+        SttInterface.token=TOKEN
         self.__headers = {
             "Authorization": f"Bearer {self.token}"
         }

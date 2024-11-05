@@ -38,7 +38,7 @@ class OpenAiGPT(GptInterface):
 
     def __init__(self):
         self.allowed_models = ["gpt-4o-mini", "gpt-4o", "o1-mini", "o1-preview", "gpt-3.5-turbo"]
-        self.__model = "gpt-4o-mini"
+        self.model = "gpt-4o-mini"
         self.headers = {
             "Authorization": f"Bearer {OpenAiGPT.token}",
             "Content-Type": "application/json"
@@ -53,7 +53,7 @@ class OpenAiGPT(GptInterface):
 
     def create_default_json(self, prompt=None):
         json_data = {
-            "model": self.__model,
+            "model": self.model,
             "messages": []
         }
         if prompt is not None:
@@ -74,7 +74,7 @@ class OpenAiGPT(GptInterface):
 
     def set_model(self, model):
         if self.is_allowed_model(model):
-            self.__model = model
+            self.model = model
             return True
         else:
             return False
@@ -108,7 +108,7 @@ class OpenAiGPT(GptInterface):
     def send_json(self, json_dict):
         try:
             to_send_json = {
-                "model": self.__model,
+                "model": self.model,
             }
             to_send_json.update(json_dict)
             response = requests.post(self.url, json=to_send_json, headers=self.headers)
