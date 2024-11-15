@@ -16,8 +16,8 @@ class Database:
 
 
 class FileDatabase:
-    def __init__(self):
-        self.session_base_dir = "../Database"
+    def __init__(self, base_dir="../Database"):
+        self.session_base_dir = base_dir
         if not os.path.exists(self.session_base_dir):
             os.makedirs(self.session_base_dir)
 

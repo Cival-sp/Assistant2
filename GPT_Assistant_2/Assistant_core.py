@@ -4,13 +4,15 @@ from Utility import validate_json, AudioFile, validate_data
 from Command_processor import Command, CommandProcessor
 import time
 import threading
+from Logger import Logger
 
 
 class AssistantRequest:
     def __init__(self, message=None, user_id=None):
         self.message = message
         self.user_id = user_id
-        self.voice_data = AudioFile
+        self.user = None
+        self.voice_data = None #AudioFile
         self.is_audio_message = False
         self.file = None
         self.file_type = None
@@ -29,6 +31,7 @@ class AssistantAnswer:
         self.request = None
 
     @staticmethod
+    @Logger.log_call
     def from_json(json_dict):
         """
         Создает объект AssistantAnswer из словаря JSON.
@@ -45,6 +48,7 @@ class AssistantAnswer:
 
         return instance
 
+    @Logger.log_call
     def to_json(self):
         """
         Преобразует объект AssistantAnswer в словарь JSON.
@@ -69,9 +73,11 @@ class Session:
         self.history = []  # [Message]
         Session.session_count = self.session_id
 
+    @Logger.log_call
     def update_call_time(self):
         self.last_call = time.time()
 
+    @Logger.log_call
     def append(self, msg_arr):
         if isinstance(msg_arr, list) or isinstance(msg_arr, tuple):
             self.history.extend(msg_arr)
@@ -133,15 +139,15 @@ class SessionManager:
             if user_id in self.current_sessions:
                 for session in self.current_sessions[user_id]:
                     if isinstance(session, Session):
-                        session.last_call = time.time()  # Обновляем время последнего вызова
+                        session.last_call = time.time()
                         break
 
+    @Logger.log_call
     def get_last_session(self, user_id):
         """Возвращает последнюю сессию для указанного user_id, если она существует."""
         with self.mutex:
             if user_id in self.current_sessions and self.current_sessions[user_id]:
                 return self.current_sessions[user_id][-1]
-            # Если сессий нет, возвращаем None
             return None
 
     def active_sessions_count(self, user_id):
@@ -149,15 +155,15 @@ class SessionManager:
         with self.mutex:
             if user_id in self.current_sessions:
                 return len(self.current_sessions[user_id])  # Возвращаем количество сессий для пользователя
-            return 0  # Если нет сессий, возвращаем 0
+            return 0
 
     def total_active_sessions(self):
         """Возвращает общее количество валидных активных сессий."""
         with self.mutex:
-            total_count = 0  # Инициализируем счетчик
+            total_count = 0
             for session_array in self.current_sessions.values():
-                total_count += len(session_array)  # Подсчитываем количество активных сессий
-            return total_count  # Возвращаем общее количество валидных сессий
+                total_count += len(session_array)
+            return total_count
 
     def do(self):
         """Выполняет периодическую проверку и очистку устаревших сессий."""
@@ -165,7 +171,7 @@ class SessionManager:
             self.check_timeout()
             for sessions in self.current_sessions.values():
                 for session in sessions:
-                    self.clear_history(session)  # Очищаем историю для каждой сессии
+                    self.clear_history(session)
 
 
 class AssistantLogic:
@@ -181,6 +187,7 @@ class AssistantLogic:
         self.current_session = None
         self.current_user = None
 
+    @Logger.log_call
     def init_session(self, user: User):
         self.current_user = user
         self.current_assistant_person = user.person_assistant
@@ -189,12 +196,14 @@ class AssistantLogic:
         if isinstance(self.current_session, Session):
             self.current_session.update_call_time()
 
+    @Logger.log_call
     def close_session(self):
         self.current_user = None
         self.current_assistant_person = None
         self.current_gpt_model = None
         self.current_session = None
 
+    @Logger.log_call
     def update_session(self, messages):
         if not isinstance(messages, list) or not isinstance(messages, tuple) or not isinstance(messages, Message):
             raise TypeError(f"update_session передан неподходящий тип {type(messages)}")
@@ -202,15 +211,17 @@ class AssistantLogic:
             raise TypeError(f"Передан None в update_session")
         self.current_session.append(messages)
 
+    @Logger.log_call
     def fast_update_session(self, role: str, message: str) -> None:
         self.update_session(Message(role, message))
 
+    @Logger.log_call
     def make_json_for_request(self, __request):
-        if isinstance(self.current_gpt_model, OpenAiGPT):
+        if self.current_gpt_model is not None:
             if self.current_gpt_model.model is None:
                 raise Exception("Некорректная GPT модель")
             res_json = {
-                "model": self.current_gpt_model,
+                "model": self.current_gpt_model.model,
                 "messages": [],
                 "response_format": {
                     "type": "json_schema",
@@ -257,18 +268,19 @@ class AssistantLogic:
                     }
                 }
             }
-            chat_history = self.current_session.history
             if __request.user_id is None:
                 role = "system"
             else:
                 role = "user"
-            if chat_history is not None:
+            if self.current_session is not None:
+                chat_history = self.current_session.history
                 for message in chat_history:
                     res_json["messages"].append({"role": message.sender, "content": message.text})
             res_json["messages"].append({"role": role, "content": __request.message})
             return res_json
         raise Exception("GPT модель не задана или некорректна")
 
+    @Logger.log_call
     def parse_answer(self, gpt_answer_json) -> AssistantAnswer:
         answer_dict = validate_json(gpt_answer_json)
         result = AssistantAnswer()
@@ -280,21 +292,18 @@ class AssistantLogic:
         result.gpt_tokens = result.total_tokens - result.prompt_tokens
         return result
 
-    def audio_preprocessing(self, request) -> bool:
-        validate_data(request, AssistantRequest)
-        if request.voice_data is not None:
-            request.is_audio_message = True
-            recognized_text = self.stt_service.recognize(request.voice_data)
-            if recognized_text is None:
-                raise Exception(f"Не распознан текст в запросе {request.user_id}")
-            request.text = recognized_text
-            # Сохранить при необходимости аудиофайл
-            return request
-        return request
+    @Logger.log_call
+    def audio_preprocessing(self, request: AssistantRequest) -> bool:
+        recognized_text = self.stt_service.recognize(request.voice_data)
+        if recognized_text is None:
+            raise Exception(f"Не распознан текст в запросе {request.user_id}")
+        request.text = recognized_text
+        # Сохранить при необходимости аудиофайл
+        return True
 
-    def audio_processing(self, request: AssistantRequest):
-        pass
 
+
+    @Logger.log_call
     def text_processing(self, request: AssistantRequest) -> AssistantAnswer:
         validate_data(request, AssistantRequest)
         if not request.message:
@@ -308,6 +317,7 @@ class AssistantLogic:
         self.fast_update_session("assistant", answer_obj.text)
         return answer_obj
 
+    @Logger.log_call
     def analyze_command_result(self, cmd_res: str) -> str:
         req_json = self.make_json_for_request(AssistantRequest(cmd_res, None))
         gpt_result_json = self.current_gpt_model.send_json(req_json)
@@ -316,6 +326,7 @@ class AssistantLogic:
         gpt_text = self.parse_answer(gpt_result_json).text
         return gpt_text
 
+    @Logger.log_call
     def command_processing(self, command: Command) -> str:
         command_return = self.command_processor.execute_command(command)
         if command_return is None:
@@ -324,14 +335,25 @@ class AssistantLogic:
         self.current_session.append(Message("assistant", analyzed_text))
         return analyzed_text
 
-    def process_session(self, user: User, request: AssistantRequest) -> AssistantAnswer or AudioFile:
+    @Logger.log_call
+    def is_voice(self,request: AssistantRequest) -> bool:
+        if request.voice_data is not None:
+            request.is_voice_message = True
+            return True
+        else:
+            return False
+
+    @Logger.log_call
+    def process_session(self, request: AssistantRequest) -> AssistantAnswer or AudioFile:
         try:
-            self.init_session(user)
-            is_audio = self.audio_preprocessing(request)
+            self.init_session(request.user)
+            self.is_voice(request)
+            if request.is_audio_message:
+                self.audio_preprocessing(request)
             result = self.text_processing(request)
             if result.command is not None:
                 result.text = self.command_processing(result.command)
-            if is_audio:
+            if request.is_audio_message:
                 self.close_session()
                 return self.tts_service.to_voice(result.text)
             self.close_session()

@@ -2,14 +2,18 @@ import requests
 import json
 from abc import ABC, abstractmethod
 
+from flask import request
+
+from Logger import Logger
 
 class GptInterface(ABC):
     """Интерфейс для работы с GPT """
-    url = None
-    token = None
+
 
     @abstractmethod
     def __init__(self):
+        self.url = None
+        self.token = None
         pass
 
     @abstractmethod
@@ -39,11 +43,14 @@ class OpenAiGPT(GptInterface):
     def __init__(self):
         self.allowed_models = ["gpt-4o-mini", "gpt-4o", "o1-mini", "o1-preview", "gpt-3.5-turbo"]
         self.model = "gpt-4o-mini"
+        self.token=None
+        self.url=None
         self.headers = {
             "Authorization": f"Bearer {OpenAiGPT.token}",
             "Content-Type": "application/json"
         }
 
+    @Logger.log_call
     def is_allowed_model(self, model):
         model = model.lower()
         if model in self.allowed_models:
@@ -51,6 +58,7 @@ class OpenAiGPT(GptInterface):
         else:
             return False
 
+    @Logger.log_call
     def create_default_json(self, prompt=None):
         json_data = {
             "model": self.model,
@@ -63,7 +71,9 @@ class OpenAiGPT(GptInterface):
             })
         return json_data
 
+
     @staticmethod
+    @Logger.log_call
     def extract_string_from_answer(response):
         if response.status_code != 200:
             return None
@@ -72,6 +82,7 @@ class OpenAiGPT(GptInterface):
             gpt_message = response_json['choices'][0]['message']['content']
             return gpt_message
 
+    @Logger.log_call
     def set_model(self, model):
         if self.is_allowed_model(model):
             self.model = model
@@ -79,6 +90,7 @@ class OpenAiGPT(GptInterface):
         else:
             return False
 
+    @Logger.log_call
     def ask(self, message, json_pattern=None, prompt=None):
         """
         Отправляет сообщение GPT модели. При необходимости можно передать словарь с историей или промтом.
@@ -105,6 +117,7 @@ class OpenAiGPT(GptInterface):
             print(e)
             return None
 
+    @Logger.log_call
     def send_json(self, json_dict):
         try:
             to_send_json = {
@@ -113,6 +126,8 @@ class OpenAiGPT(GptInterface):
             to_send_json.update(json_dict)
             response = requests.post(self.url, json=to_send_json, headers=self.headers)
             if response.status_code != 200:
+                print(f"Запрос {request}, ответ: {response.json()}")
+                raise Exception(f"Ответ сервера GPT: {response.status_code}")
                 return None
             res_json = response.json()
             if res_json is not None:
@@ -128,7 +143,6 @@ if __name__ == "__main__":
     OpenAiGPT.token = "<KEY>"
     OpenAiGPT.url = "host"
     gpt4_mini = OpenAiGPT()
-    # print(gpt4_mini.ask("Добавь в json файл своего ответа массив 'commands':[]",prompt= ""))
     j = {
         "messages": [
             {

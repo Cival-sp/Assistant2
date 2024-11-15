@@ -2,6 +2,7 @@
 import requests
 from Utility import AudioFile
 from abc import ABC, abstractmethod
+from Logger import Logger
 
 class SttInterface(ABC):
 
@@ -32,6 +33,7 @@ class OpenAiStt(SttInterface):
         }
 
     @staticmethod
+    @Logger.log_call
     def is_allowed(value, list_of_allowed_values):
         """
         Проверяет допустимость значения по списку допустимых значений
@@ -41,6 +43,7 @@ class OpenAiStt(SttInterface):
         """
         return value.lower() in list_of_allowed_values
 
+    @Logger.log_call
     def recognize(self, input_file):
         try:
             if input_file.extension not in self.allowed_input_formats:
@@ -61,6 +64,7 @@ class OpenAiStt(SttInterface):
         except Exception as e:
             print(f"В процессе распознования речи произошла ошибка: {e}")
 
+    @Logger.log_call
     def recognize_from_file(self, FilePath):
         try:
             audio=AudioFile.from_path(FilePath)

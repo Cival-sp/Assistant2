@@ -2,6 +2,7 @@ from enum import Enum
 from GPT_Assistant_2.GPT_module import OpenAiGPT
 import time
 import threading
+from Logger import Logger
 
 
 class Message:
@@ -60,21 +61,30 @@ class User:
         }
         self.authorization_data = {
             "login": user_login,
-            "password": None,
+            "password": "1",
         }
         self.settings = {}
 
+        self.person_assistant.model.model = "gpt-4o-mini"
+        self.person_assistant.model.token = ""
+        self.person_assistant.model.url = ""
+
+
     @staticmethod
+    @Logger.log_call
     def init_default_user(user_id):
         user = User(user_id, "Гость")
         user.user_avatar = None
+        user.person_assistant.model.model="gpt-4o-mini"
+        user.person_assistant.model.token = ""
+        user.person_assistant.model.url = ""
         return user
 
 
 class UserManager:
     _users = {
         1: User(1, "admin", User.Group.BANNED),
-        2: User(2, "Cival", User.Group.ADMIN)
+        2: User(2, "cival", User.Group.ADMIN)
     }
     _busy_logins = {"admin", "Cival"}
     _busy_id = set(_users.keys())
@@ -88,17 +98,20 @@ class UserManager:
             UserManager._user_count = len(UserManager._users)
 
     @staticmethod
+    @Logger.log_call
     def load_from_database(database) -> dict:
         with UserManager._mutex:
             UserManager.update_fields()
             raise NotImplementedError("Загрузка из базы данных не реализована")
 
     @staticmethod
+    @Logger.log_call
     def save_to_database(database, dictionary: dict) -> bool:
         UserManager.update_fields()
         raise NotImplementedError("Сохранение в базу данных не реализовано")
 
     @staticmethod
+    @Logger.log_call
     def find_user(user_id: int = None, user_login: str = None) -> User | None:
         UserManager.update_fields()
         if user_id is not None:
@@ -117,6 +130,7 @@ class UserManager:
         return None
 
     @staticmethod
+    @Logger.log_call
     def new_user(user_login: str, user_group: User.Group = User.Group.COMMON):
         user_login = user_login.lower()
         with UserManager._mutex:
@@ -135,6 +149,7 @@ class UserManager:
             return new_user
 
     @staticmethod
+    @Logger.log_call
     def delete_user(user_id: int = None, user_login: str = None) -> bool:
         if user_login is not None:
             user_login = user_login.lower()
@@ -164,6 +179,7 @@ class UserManager:
 class Permission:
 
     @staticmethod
+    @Logger.log_call
     def check(user: User, group: User.Group) -> bool:
         if user.user_group == group:
             return True
