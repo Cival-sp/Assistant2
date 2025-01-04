@@ -46,8 +46,8 @@ class OpenAiStt(SttInterface):
     @Logger.log_call
     def recognize(self, input_file):
         try:
-            if input_file.extension not in self.allowed_input_formats:
-                return None
+            #if input_file.extension not in self.allowed_input_formats:
+                #return None
             req_body={
                 "model": self.__model,
                 "response_format": "text"
@@ -60,7 +60,7 @@ class OpenAiStt(SttInterface):
             )
             if response.status_code != 200:
                 return None
-            return response.json()["text"]
+            return response.text
         except Exception as e:
             print(f"В процессе распознования речи произошла ошибка: {e}")
 

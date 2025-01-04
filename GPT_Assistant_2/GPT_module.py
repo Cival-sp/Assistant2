@@ -1,19 +1,17 @@
 import requests
 import json
 from abc import ABC, abstractmethod
-
 from flask import request
-
 from Logger import Logger
 
 class GptInterface(ABC):
     """Интерфейс для работы с GPT """
 
+    url=None
+    token=None
 
     @abstractmethod
     def __init__(self):
-        self.url = None
-        self.token = None
         pass
 
     @abstractmethod
@@ -43,12 +41,13 @@ class OpenAiGPT(GptInterface):
     def __init__(self):
         self.allowed_models = ["gpt-4o-mini", "gpt-4o", "o1-mini", "o1-preview", "gpt-3.5-turbo"]
         self.model = "gpt-4o-mini"
-        self.token=None
-        self.url=None
         self.headers = {
             "Authorization": f"Bearer {OpenAiGPT.token}",
             "Content-Type": "application/json"
         }
+
+    def update_headers(self):
+        self.headers["Authorization"] = f"Bearer {OpenAiGPT.token}"
 
     @Logger.log_call
     def is_allowed_model(self, model):
@@ -119,24 +118,25 @@ class OpenAiGPT(GptInterface):
 
     @Logger.log_call
     def send_json(self, json_dict):
+        self.update_headers()
+        if not isinstance(json_dict, dict): raise TypeError('json_dict must be of type dict')
+        #print(f"Вызов OpenAiGPT c json:{json.dumps(json_dict) }")
+        #print(f"API key: {OpenAiGPT.token}")
+        #print(f"Headers: {self.headers}")
         try:
-            to_send_json = {
-                "model": self.model,
-            }
+            to_send_json={}
             to_send_json.update(json_dict)
-            response = requests.post(self.url, json=to_send_json, headers=self.headers)
+            response = requests.post(OpenAiGPT.url, json=to_send_json, headers=self.headers)
             if response.status_code != 200:
                 print(f"Запрос {request}, ответ: {response.json()}")
-                raise Exception(f"Ответ сервера GPT: {response.status_code}")
-                return None
+                raise Exception(f"Ответ сервера GPT: {response.status_code} и {response.json()}")
             res_json = response.json()
             if res_json is not None:
                 return res_json
             else:
                 return None
         except Exception as e:
-            print(f"В процессе запроса к серверу GPT произошла ошибка: {e}")
-            return None
+            raise Exception(e)
 
 
 if __name__ == "__main__":

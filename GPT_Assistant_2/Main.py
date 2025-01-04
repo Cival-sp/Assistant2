@@ -7,6 +7,7 @@ from flask import Flask, jsonify, request, g
 from GPT_Assistant_2.Assistant_core import SessionManager, AssistantLogic
 from GPT_Assistant_2.Command_processor import CommandProcessor
 from GPT_Assistant_2.Database_module import FileDatabase
+from GPT_Assistant_2.GPT_module import GptInterface
 from GPT_Assistant_2.User_module import UserManager, User, Permission
 from STT_module import OpenAiStt
 from TTS_module import OpenAiTTS
@@ -35,9 +36,11 @@ def environment_init(config):
     session_manager = SessionManager(config.get("session_timeout", 180),
                                      config.get("max_sessions", 5), database)
     command_processor = CommandProcessor()
-    stt_service = OpenAiStt()
-    tts_service = OpenAiTTS()
+    stt_service = OpenAiStt("https://api.proxyapi.ru/openai/v1/audio/transcriptions","sk-U6gRdozgvtlXK4ph9pPkNhKbJtt55grN")
+    tts_service = OpenAiTTS("https://api.proxyapi.ru/openai/v1/audio/speech","sk-U6gRdozgvtlXK4ph9pPkNhKbJtt55grN")
     assistant_core = AssistantLogic(command_processor, session_manager, stt_service, tts_service, database)
+    GptInterface.url="https://api.proxyapi.ru/openai/v1/chat/completions"
+    GptInterface.token="sk-U6gRdozgvtlXK4ph9pPkNhKbJtt55grN"
 
 
 @Logger.log_call
@@ -101,7 +104,7 @@ def main():
                 g.tg_id = telegram_id
 
     @AiServer.route('/say', methods=['POST'])
-    @Logger.log_call
+    #@Logger.log_call
     def say():
         try:
             if g.user is None:
@@ -110,14 +113,14 @@ def main():
                 return jsonify({'error': "User,don't have a permission"}), 403
             assistant_req = RequestFormatter.to_assistant_request(request, g)
             assistant_output = assistant_core.process_session(assistant_req)
-            return RequestFormatter.make_flask_response(assistant_output)
+            answr = RequestFormatter.make_flask_response(assistant_output)
+            print(answr)
+            return answr
+
         except Exception as e:
             print(e)
             return jsonify({'error': str(e)}), 500
 
-    @AiServer.after_request
-    def after_request(response):
-        pass
 
     @AiServer.route('/shutdown', methods=['POST'])
     def shutdown():

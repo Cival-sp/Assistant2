@@ -5,15 +5,13 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9dc752bd-ec9b-48fe-a22d-df27a550125d" name="Changes" comment="updt">
-      <change afterPath="$PROJECT_DIR$/GPT_Assistant_2/Logger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/Assistant_core.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/Assistant_core.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/Database_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/Database_module.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/GPT_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/GPT_module.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/Logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/Logger.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/Main.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/Main.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/Requester.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/Requester.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/STT_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/STT_module.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/GPT_Assistant_2/User_module.py" beforeDir="false" afterPath="$PROJECT_DIR$/GPT_Assistant_2/User_module.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -68,30 +66,31 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;Python tests.Python tests in gpt_interpretator_test.py.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Api test.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Command_processor.executor&quot;: &quot;Run&quot;,
-    &quot;Python.GPT_module.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Gpt_interpretator.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Logger.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Main.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Requester.executor&quot;: &quot;Run&quot;,
-    &quot;Python.STT_module.executor&quot;: &quot;Run&quot;,
-    &quot;Python.TTS_module.executor&quot;: &quot;Run&quot;,
-    &quot;Python.Weather_api.executor&quot;: &quot;Run&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.keymap&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Python tests.Python tests in gpt_interpretator_test.py.executor": "Run",
+    "Python.Api test.executor": "Run",
+    "Python.Command_processor.executor": "Run",
+    "Python.GPT_module.executor": "Run",
+    "Python.Gpt_interpretator.executor": "Run",
+    "Python.Logger.executor": "Run",
+    "Python.Main.executor": "Run",
+    "Python.Requester.executor": "Run",
+    "Python.STT_module.executor": "Debug",
+    "Python.TTS_module.executor": "Run",
+    "Python.User_module.executor": "Run",
+    "Python.Weather_api.executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "master",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "preferences.keymap",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="E:\Python projects\GPT_Assistant_2\GPT_Assistant_2" />
@@ -127,7 +126,11 @@
       <workItem from="1730476481538" duration="86561000" />
       <workItem from="1731279203149" duration="203000" />
       <workItem from="1731314567497" duration="11699000" />
-      <workItem from="1731606142651" duration="3531000" />
+      <workItem from="1731606142651" duration="6017000" />
+      <workItem from="1732909062874" duration="950000" />
+      <workItem from="1733149408116" duration="59000" />
+      <workItem from="1733224944152" duration="15644000" />
+      <workItem from="1735768505716" duration="21013000" />
     </task>
     <task id="LOCAL-00001" summary="OpenAi chatGPT api released">
       <option name="closed" value="true" />
@@ -185,7 +188,15 @@
       <option name="project" value="LOCAL" />
       <updated>1730808432126</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="updt">
+      <option name="closed" value="true" />
+      <created>1731658856392</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1731658856392</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -205,20 +216,22 @@
     <watches-manager>
       <configuration name="PythonConfigurationType">
         <watch expression="OpenAiStt.url" language="Python" />
+        <watch expression="input_file.stream" />
       </configuration>
     </watches-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/GPT_Assistant_2$.coverage" NAME=" Coverage Results" MODIFIED="1729281085799" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
     <SUITE FILE_PATH="coverage/GPT_Assistant_2$Command_processor.coverage" NAME="Command_processor Coverage Results" MODIFIED="1730626992229" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
-    <SUITE FILE_PATH="coverage/GPT_Assistant_2$Api_test.coverage" NAME="Api test Coverage Results" MODIFIED="1730627895719" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
     <SUITE FILE_PATH="coverage/GPT_Assistant_2$Gpt_interpretator.coverage" NAME="Gpt_interpretator Coverage Results" MODIFIED="1729282341953" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
+    <SUITE FILE_PATH="coverage/GPT_Assistant_2$Requester.coverage" NAME="Requester Coverage Results" MODIFIED="1731336618341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
+    <SUITE FILE_PATH="coverage/GPT_Assistant_2$TTS_module.coverage" NAME="TTS_module Coverage Results" MODIFIED="1730627734466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
+    <SUITE FILE_PATH="coverage/GPT_Assistant_2$STT_module.coverage" NAME="STT_module Coverage Results" MODIFIED="1735899978084" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
+    <SUITE FILE_PATH="coverage/GPT_Assistant_2$User_module.coverage" NAME="User_module Coverage Results" MODIFIED="1733224950556" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
+    <SUITE FILE_PATH="coverage/GPT_Assistant_2$Api_test.coverage" NAME="Api test Coverage Results" MODIFIED="1730627895719" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
     <SUITE FILE_PATH="coverage/GPT_Assistant_2$GPT_module.coverage" NAME="GPT_module Coverage Results" MODIFIED="1729441522380" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
     <SUITE FILE_PATH="coverage/GPT_Assistant_2$Weather_api.coverage" NAME="Weather_api Coverage Results" MODIFIED="1730648929399" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2/Api" />
-    <SUITE FILE_PATH="coverage/GPT_Assistant_2$Requester.coverage" NAME="Requester Coverage Results" MODIFIED="1731336618341" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
     <SUITE FILE_PATH="coverage/GPT_Assistant_2$Logger.coverage" NAME="Logger Coverage Results" MODIFIED="1731321240604" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2/Api" />
-    <SUITE FILE_PATH="coverage/GPT_Assistant_2$STT_module.coverage" NAME="STT_module Coverage Results" MODIFIED="1729153710728" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
-    <SUITE FILE_PATH="coverage/GPT_Assistant_2$TTS_module.coverage" NAME="TTS_module Coverage Results" MODIFIED="1730627734466" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
-    <SUITE FILE_PATH="coverage/GPT_Assistant_2$Main.coverage" NAME="Main Coverage Results" MODIFIED="1731341004982" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
+    <SUITE FILE_PATH="coverage/GPT_Assistant_2$Main.coverage" NAME="Main Coverage Results" MODIFIED="1736010377892" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/GPT_Assistant_2" />
   </component>
 </project>

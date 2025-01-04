@@ -1,5 +1,6 @@
 import os
 import datetime
+import threading
 
 class Logger:
     LEVELS = {
@@ -33,7 +34,8 @@ class Logger:
     def _log(level_name, message):
         if Logger.LEVELS[level_name] >= Logger.level:
             timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            log_message = f"{timestamp} - {Logger.name} - {level_name} - {message}"
+            thread_name = threading.current_thread().name
+            log_message = f"{timestamp}  - [Thread: {thread_name}] - {message}"
             print(log_message)
             if Logger.log_file:
                 with open(Logger.log_file, 'a') as f:
@@ -60,4 +62,5 @@ class Logger:
         return wrapper
 
 Logger.configure(name="AppLogger", level="DEBUG")
+
 

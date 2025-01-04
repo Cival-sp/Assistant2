@@ -1,9 +1,10 @@
 from GPT_module import GptInterface, OpenAiGPT
 from User_module import Assistant, Message, User
-from Utility import validate_json, AudioFile, validate_data
+from Utility import validate_json, File,AudioFile, validate_data
 from Command_processor import Command, CommandProcessor
 import time
 import threading
+import json
 from Logger import Logger
 
 
@@ -23,6 +24,7 @@ class AssistantAnswer:
         self.text = None
         self.command = None
         self.continue_conversation = None
+        self.voice_file = None
         self.file = None
         self.file_type = None
         self.prompt_tokens = None
@@ -81,25 +83,39 @@ class Session:
     def append(self, msg_arr):
         if isinstance(msg_arr, list) or isinstance(msg_arr, tuple):
             self.history.extend(msg_arr)
-        if isinstance(msg_arr, Message):
+        elif isinstance(msg_arr, Message):
             self.history.append(msg_arr)
-        raise TypeError(f"в метод Session.append передан обьект класса{type(msg_arr)}")
+        else:
+            raise TypeError(f"в метод Session.append передан обьект класса{type(msg_arr)}")
 
 
 class SessionManager:
+    """
+        Менеджер сессий пользователей, обеспечивающий их управление, очистку и контроль таймаута.
+
+        Атрибуты:
+            current_sessions (dict): Словарь активных сессий, где ключ — user_id, значение — список объектов Session.
+            session_timeout (int): Время жизни сессии в секундах.
+            history_max_len (int): Максимальная длина истории сессии.
+            database (object): Объект базы данных для сохранения устаревших сессий (опционально).
+            mutex (threading.Lock): Мьютекс для обеспечения потокобезопасности.
+        """
+
     def __init__(self, timeout_min=60, max_len=1, database=None):
-        self.current_sessions = {}  # Словарь для хранения сессий по user_id
+        self.current_sessions = {}  # Словарь для хранения сессий по user_id. Должен содержать массив сессий
         self.session_timeout = timeout_min * 60  # Время таймаута сессии в секундах
         self.history_max_len = max_len  # Максимальная длина истории
         self.database = database  # Подключение к базе данных, если нужно
         self.mutex = threading.Lock()  # Мьютекс
 
-    def add_session(self, user_id):
+    def add_session(self, user_id) -> Session:
         """Добавляет новую сессию для указанного user_id."""
         with self.mutex:
             if user_id not in self.current_sessions:
                 self.current_sessions[user_id] = []  # Создаем список сессий для нового пользователя
-            self.current_sessions[user_id].append(Session(user_id))  # Добавляем новую сессию
+            new_session = Session(user_id)
+            self.current_sessions[user_id].append(new_session)  # Добавляем новую сессию
+            return new_session
 
     def check_timeout(self):
         """Проверяет сессии на истечение времени."""
@@ -145,10 +161,12 @@ class SessionManager:
     @Logger.log_call
     def get_last_session(self, user_id):
         """Возвращает последнюю сессию для указанного user_id, если она существует."""
-        with self.mutex:
-            if user_id in self.current_sessions and self.current_sessions[user_id]:
-                return self.current_sessions[user_id][-1]
-            return None
+        if user_id in self.current_sessions and self.current_sessions[user_id]:
+            return self.current_sessions[user_id][-1]
+        else:
+            return self.add_session(user_id)
+
+
 
     def active_sessions_count(self, user_id):
         """Возвращает количество активных сессий для указанного user_id."""
@@ -205,11 +223,16 @@ class AssistantLogic:
 
     @Logger.log_call
     def update_session(self, messages):
-        if not isinstance(messages, list) or not isinstance(messages, tuple) or not isinstance(messages, Message):
+        if not (isinstance(messages, list) or isinstance(messages, tuple) or isinstance(messages, Message)):
             raise TypeError(f"update_session передан неподходящий тип {type(messages)}")
         if messages is None:
             raise TypeError(f"Передан None в update_session")
-        self.current_session.append(messages)
+        if self.current_session is None:
+
+            pass
+
+        else:
+            self.current_session.append(messages)
 
     @Logger.log_call
     def fast_update_session(self, role: str, message: str) -> None:
@@ -284,12 +307,20 @@ class AssistantLogic:
     def parse_answer(self, gpt_answer_json) -> AssistantAnswer:
         answer_dict = validate_json(gpt_answer_json)
         result = AssistantAnswer()
-        result.text = answer_dict["choices"][0]["content"]["Text"]
-        result.command = Command.from_json(answer_dict["choices"][0]["content"]["command"])
-        result.continue_conversation = answer_dict["choices"][0]["content"]["continueConversation"]
-        result.total_tokens = answer_dict["total_tokens"]
-        result.prompt_tokens = answer_dict["prompt_tokens"]
+
+        # Десериализация вложенного JSON в поле "content"
+        content_str = answer_dict["choices"][0]["message"]["content"]
+        content_dict = json.loads(content_str)
+
+        result.text = content_dict["Text"]
+        result.command = Command.from_json(content_dict["command"]) if content_dict["command"] else None
+        result.continue_conversation = content_dict["continueConversation"]
+
+        # Извлечение данных об использовании токенов
+        result.total_tokens = answer_dict["usage"]["total_tokens"]
+        result.prompt_tokens = answer_dict["usage"]["prompt_tokens"]
         result.gpt_tokens = result.total_tokens - result.prompt_tokens
+
         return result
 
     @Logger.log_call
@@ -297,7 +328,7 @@ class AssistantLogic:
         recognized_text = self.stt_service.recognize(request.voice_data)
         if recognized_text is None:
             raise Exception(f"Не распознан текст в запросе {request.user_id}")
-        request.text = recognized_text
+        request.message = recognized_text
         # Сохранить при необходимости аудиофайл
         return True
 
@@ -349,13 +380,13 @@ class AssistantLogic:
             self.init_session(request.user)
             self.is_voice(request)
             if request.is_audio_message:
-                self.audio_preprocessing(request)
-            result = self.text_processing(request)
+                if  isinstance(request.voice_data, File):
+                    self.audio_preprocessing(request)
+            result = self.text_processing(request) #AssistantAnswer
             if result.command is not None:
                 result.text = self.command_processing(result.command)
             if request.is_audio_message:
-                self.close_session()
-                return self.tts_service.to_voice(result.text)
+                result.voice_file= self.tts_service.to_voice(result.text)
             self.close_session()
             return result
         except Exception as e:
